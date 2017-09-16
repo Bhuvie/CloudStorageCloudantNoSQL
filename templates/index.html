@@ -1,0 +1,112 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+      <script>
+      $(function() {
+					    $('#uploadfile').click(function() {
+					        event.preventDefault();
+					        var form_data = new FormData($('#uploadform')[0]);
+                        var fileInput = document.getElementById("file");
+                        var files=fileInput.files;
+                        form_data.append('flstmod',Date.parse(files[0].lastModifiedDate));
+					        $.ajax({
+					            type: 'POST',
+					            url: '/upload',
+					            data: form_data,
+					            contentType: false,
+					            processData: false
+					        }).done(function(dat){
+					        	   alert(dat);
+                              $("#list").click();
+					            console.log('Success!');
+					        }).fail(function(data){
+					            alert(data);
+					        });
+					    });
+              }); 
+					
+
+   $(function() {
+					    $('#delete').click(function() {
+					        event.preventDefault();
+					        var form_data = new FormData($('#delete_form')[0]);
+					        $.ajax({
+					            type: 'POST',
+					            url: '/delete',
+					            data: form_data,
+					            contentType: false,
+					            processData: false
+					        }).done(function(dat){
+					        	   alert(dat);
+                             $("#list").click();
+					            console.log('Success!');
+					        }).fail(function(data){
+					            alert('error!');
+					        });
+					    });
+              });
+
+    $(function() {
+					    $('#list').click(function() {
+					        event.preventDefault();
+					        var form_data = new FormData($('#list_form')[0]);
+					        $.ajax({
+					            type: 'POST',
+					            url: '/listfiles',
+					            data: form_data,
+					            contentType: false,
+					            processData: false
+					        }).done(function(dat){
+					        	   $("#lf").html(dat);
+					            console.log('Success!');
+					        }).fail(function(data){
+					            alert('error!');
+					        });
+					    });
+              });
+  </script>
+    
+  </head>
+<body>
+ <div class="container">
+   <h3>Upload a file</h3>
+   <form id="uploadform" method="POST" enctype="multipart/form-data">
+      <input type="file" name="file" id="file"/><br>
+      <button type="button" name="uploadfile" id="uploadfile" class="btn btn-primary">Upload</button>
+   </form>
+   </div>
+   <div class="container">
+   <hr>
+   <h3>Download a file</h3>
+   {% if error %}
+    <p class='alert alert-info' id="err"><strong>Error:</strong> {{ error }} </p>
+  {% endif %}
+   <form id="download_form" action="/download" method="POST">
+     File Name: <input type="text" name="dfilename" placeholder="Enter file name">Version: <input type="text" name="dversion" placeholder="Enter version"><br><br>
+     <input type="submit" name="download" id="download" value="Download" class="btn btn-primary">
+   </form>
+   </div>
+   <div class="container">
+   <hr>
+   <h3>Delete a file</h3>
+   <form id="delete_form"  method="POST">
+     File Name: <input type="text" name="defilename" placeholder="Enter file name">Version: <input type="text" name="deversion" placeholder="Enter version"><br><br>
+     <button type="button" name="delete" id="delete" class="btn btn-danger">Delete</button>
+   </form>
+   </div>
+   <div class="container">
+   <hr>
+   <h3>List all the files</h3>
+   <form id="list_form" method="POST">
+     <button type="button" name="list" id="list" class="btn btn-primary">List</button>
+   </form>
+   <hr>
+  </div>
+  <div class="container" id="lf">
+  </div>
+
+
+ </body>
+</html>
